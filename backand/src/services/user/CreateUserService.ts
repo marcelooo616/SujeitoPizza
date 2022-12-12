@@ -1,4 +1,6 @@
 import prismaClient from '../../prisma/Index'
+import { hash } from 'bcryptjs';
+
 
 
 interface UserRequest{
@@ -26,17 +28,21 @@ class CreateUserService{
         if(userAlreadyExixts){
           throw new Error("Este email ja existe ")
         }
+        // Criptografando senha
+        const passwordHash = await hash(password, 8)
 
+        //Cadastrando user
         const user = await prismaClient.user.create({
           data:{
             name: name,
             email: email,
-            password: password,
+            password: passwordHash,
           },
           select:{
             id:true,
             name:true,
             email:true,
+            
 
           }
         })
